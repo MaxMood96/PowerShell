@@ -520,7 +520,7 @@ namespace System.Management.Automation.Language
         }
 
         /// <summary>
-        /// Indicate the kind of the ErrorStatement. e.g. Kind == Switch means that this error statment is generated
+        /// Indicate the kind of the ErrorStatement. e.g. Kind == Switch means that this error statement is generated
         /// when parsing a switch statement.
         /// </summary>
         public Token Kind { get; }
@@ -754,14 +754,6 @@ namespace System.Management.Automation.Language
         public ReadOnlyCollection<ModuleSpecification> RequiredModules { get; internal set; }
 
         /// <summary>
-        /// The snapins this script requires, specified like:
-        ///     <code>#requires -PSSnapin Snapin</code>
-        ///     <code>#requires -PSSnapin Snapin -Version 2</code>
-        /// If no snapins are required, this property is an empty collection.
-        /// </summary>
-        public ReadOnlyCollection<PSSnapInSpecification> RequiresPSSnapIns { get; internal set; }
-
-        /// <summary>
         /// The assemblies this script requires, specified like:
         ///     <code>#requires -Assembly path\to\foo.dll</code>
         ///     <code>#requires -Assembly "System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"</code>
@@ -798,7 +790,7 @@ namespace System.Management.Automation.Language
         /// Construct a ScriptBlockAst that uses explicitly named begin/process/end blocks.
         /// </summary>
         /// <param name="extent">The extent of the script block.</param>
-        /// <param name="usingStatements">The list of using statments, may be null.</param>
+        /// <param name="usingStatements">The list of using statements, may be null.</param>
         /// <param name="attributes">The set of attributes for the script block.</param>
         /// <param name="paramBlock">The ast for the param block, may be null.</param>
         /// <param name="beginBlock">The ast for the begin block, may be null.</param>
@@ -835,7 +827,7 @@ namespace System.Management.Automation.Language
         /// This construction uses explicitly named begin/process/end/clean blocks.
         /// </summary>
         /// <param name="extent">The extent of the script block.</param>
-        /// <param name="usingStatements">The list of using statments, may be null.</param>
+        /// <param name="usingStatements">The list of using statements, may be null.</param>
         /// <param name="attributes">The set of attributes for the script block.</param>
         /// <param name="paramBlock">The ast for the param block, may be null.</param>
         /// <param name="beginBlock">The ast for the begin block, may be null.</param>
@@ -912,7 +904,7 @@ namespace System.Management.Automation.Language
         /// Construct a ScriptBlockAst that uses explicitly named begin/process/end blocks.
         /// </summary>
         /// <param name="extent">The extent of the script block.</param>
-        /// <param name="usingStatements">The list of using statments, may be null.</param>
+        /// <param name="usingStatements">The list of using statements, may be null.</param>
         /// <param name="paramBlock">The ast for the param block, may be null.</param>
         /// <param name="beginBlock">The ast for the begin block, may be null.</param>
         /// <param name="processBlock">The ast for the process block, may be null.</param>
@@ -938,7 +930,7 @@ namespace System.Management.Automation.Language
         /// This construction uses explicitly named begin/process/end/clean blocks.
         /// </summary>
         /// <param name="extent">The extent of the script block.</param>
-        /// <param name="usingStatements">The list of using statments, may be null.</param>
+        /// <param name="usingStatements">The list of using statements, may be null.</param>
         /// <param name="paramBlock">The ast for the param block, may be null.</param>
         /// <param name="beginBlock">The ast for the begin block, may be null.</param>
         /// <param name="processBlock">The ast for the process block, may be null.</param>
@@ -1016,7 +1008,7 @@ namespace System.Management.Automation.Language
         /// Construct a ScriptBlockAst that does not use explicitly named blocks.
         /// </summary>
         /// <param name="extent">The extent of the script block.</param>
-        /// <param name="usingStatements">The list of using statments, may be null.</param>
+        /// <param name="usingStatements">The list of using statements, may be null.</param>
         /// <param name="paramBlock">The ast for the param block, may be null.</param>
         /// <param name="statements">
         /// The statements that go in the end block if <paramref name="isFilter"/> is false, or the
@@ -1075,7 +1067,7 @@ namespace System.Management.Automation.Language
         /// Construct a ScriptBlockAst that does not use explicitly named blocks.
         /// </summary>
         /// <param name="extent">The extent of the script block.</param>
-        /// <param name="usingStatements">The list of using statments, may be null.</param>
+        /// <param name="usingStatements">The list of using statements, may be null.</param>
         /// <param name="paramBlock">The ast for the param block, may be null.</param>
         /// <param name="statements">
         /// The statements that go in the end block if <paramref name="isFilter"/> is false, or the
@@ -1117,7 +1109,7 @@ namespace System.Management.Automation.Language
         /// Construct a ScriptBlockAst that does not use explicitly named blocks.
         /// </summary>
         /// <param name="extent">The extent of the script block.</param>
-        /// <param name="usingStatements">The list of using statments, may be null.</param>
+        /// <param name="usingStatements">The list of using statements, may be null.</param>
         /// <param name="attributes">The attributes for the script block.</param>
         /// <param name="paramBlock">The ast for the param block, may be null.</param>
         /// <param name="statements">
@@ -4586,7 +4578,7 @@ namespace System.Management.Automation.Language
         /// <summary>
         /// Construct a do/while statement.
         /// </summary>
-        /// <param name="extent">The extent of the do/while statment from the label or do keyword to the closing curly brace.</param>
+        /// <param name="extent">The extent of the do/while statement from the label or do keyword to the closing curly brace.</param>
         /// <param name="label">The optionally null label.</param>
         /// <param name="condition">The condition tested on each iteration of the loop.</param>
         /// <param name="body">The body executed on each iteration of the loop.</param>
@@ -6046,8 +6038,8 @@ namespace System.Management.Automation.Language
         /// <para>Returns the name of the command invoked by this ast.</para>
         /// <para>This command name may not be known statically, in which case null is returned.</para>
         /// <para>
-        /// For example, if the command name is in a variable: <example>&amp; $foo</example>, then the parser cannot know which command is executed.
-        /// Similarly, if the command is being invoked in a module: <example>&amp; (gmo SomeModule) Bar</example>, then the parser does not know the
+        /// For example, if the command name is in a variable: <code>&amp; $foo</code>, then the parser cannot know which command is executed.
+        /// Similarly, if the command is being invoked in a module: <code>&amp; (gmo SomeModule) Bar</code>, then the parser does not know the
         /// command name is Bar because the parser can't determine that the expression <code>(gmo SomeModule)</code> returns a module instead
         /// of a string.
         /// </para>
@@ -7599,6 +7591,8 @@ namespace System.Management.Automation.Language
         }
 
         internal static readonly PSTypeName[] BoolTypeNameArray = new PSTypeName[] { new PSTypeName(typeof(bool)) };
+        internal static readonly PSTypeName[] StringTypeNameArray = new PSTypeName[] { new PSTypeName(typeof(string)) };
+        internal static readonly PSTypeName[] StringArrayTypeNameArray = new PSTypeName[] { new PSTypeName(typeof(string[])) };
 
         #region Visitors
 
@@ -8459,8 +8453,7 @@ namespace System.Management.Automation.Language
                 throw PSTraceSource.NewArgumentException(nameof(name));
             }
 
-            int backtick = name.IndexOf('`');
-            if (backtick != -1)
+            if (name.Contains('`'))
             {
                 name = name.Replace("``", "`");
             }

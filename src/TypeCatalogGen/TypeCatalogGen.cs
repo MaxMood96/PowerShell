@@ -175,7 +175,11 @@ DUPLICATE key '{fullName}' from '{strongAssemblyName}' (IsObsolete? {isTypeObsol
                     // Attribute is defined in the same module
                     MethodDefinition methodDef = reader.GetMethodDefinition((MethodDefinitionHandle)customAttribute.Constructor);
                     TypeDefinitionHandle declaringTypeDefHandle = methodDef.GetDeclaringType();
-                    if (declaringTypeDefHandle.IsNil) { /* Global method */ return false; }
+                    if (declaringTypeDefHandle.IsNil)
+                    {
+                        // Global method
+                        return false;
+                    }
 
                     TypeDefinition declaringTypeDef = reader.GetTypeDefinition(declaringTypeDefHandle);
                     attributeFullName = GetTypeFullName(reader, declaringTypeDef);
@@ -231,9 +235,6 @@ DUPLICATE key '{fullName}' from '{strongAssemblyName}' (IsObsolete? {isTypeObsol
                 case AssemblyHashAlgorithm.Sha1:
                     hashImpl = SHA1.Create();
                     break;
-                case AssemblyHashAlgorithm.MD5:
-                    hashImpl = MD5.Create();
-                    break;
                 case AssemblyHashAlgorithm.Sha256:
                     hashImpl = SHA256.Create();
                     break;
@@ -256,7 +257,7 @@ DUPLICATE key '{fullName}' from '{strongAssemblyName}' (IsObsolete? {isTypeObsol
             }
 
             // Convert bytes to hex format strings in lower case.
-            string publicKeyTokenString = BitConverter.ToString(publicKeyTokenBytes).Replace("-", string.Empty).ToLowerInvariant();
+            string publicKeyTokenString = Convert.ToHexString(publicKeyTokenBytes).ToLowerInvariant();
             string strongAssemblyName = string.Create(CultureInfo.InvariantCulture, $"{asmName}, Version={asmVersion}, Culture={asmCulture}, PublicKeyToken={publicKeyTokenString}");
 
             return strongAssemblyName;
