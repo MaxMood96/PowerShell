@@ -807,7 +807,10 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
         {
             foreach (string moduleDir in modulePathList)
             {
-                if (!Directory.Exists(moduleDir)) continue;
+                if (!Directory.Exists(moduleDir))
+                {
+                    continue;
+                }
 
                 var dscResourcesPath = Path.Combine(moduleDir, "DscResources");
                 if (Directory.Exists(dscResourcesPath))
@@ -1932,8 +1935,7 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
                 object evalResultObject;
                 if (IsConstantValueVisitor.IsConstant(pair.Item1, out evalResultObject, forAttribute: false, forRequires: false))
                 {
-                    var presentName = evalResultObject as string;
-                    if (presentName != null)
+                    if (evalResultObject is string presentName)
                     {
                         if (mandatoryPropertiesNames.Remove(presentName) && mandatoryPropertiesNames.Count == 0)
                         {
@@ -2295,8 +2297,7 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
         internal static string MapTypeNameToMofType(ITypeName typeName, string memberName, string className, out bool isArrayType, out string embeddedInstanceType, List<object> embeddedInstanceTypes, ref string[] enumNames)
         {
             TypeName propTypeName;
-            var arrayTypeName = typeName as ArrayTypeName;
-            if (arrayTypeName != null)
+            if (typeName is ArrayTypeName arrayTypeName)
             {
                 isArrayType = true;
                 propTypeName = arrayTypeName.ElementType as TypeName;
@@ -2359,15 +2360,13 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
             while (bases.Count > 0)
             {
                 var b = bases.Dequeue();
-                var tc = b as TypeConstraintAst;
 
-                if (tc != null)
+                if (b is TypeConstraintAst tc)
                 {
                     b = tc.TypeName.GetReflectionType();
                     if (b == null)
                     {
-                        var td = tc.TypeName as TypeName;
-                        if (td != null && td._typeDefinitionAst != null)
+                        if (tc.TypeName is TypeName td && td._typeDefinitionAst != null)
                         {
                             ProcessMembers(sb, embeddedInstanceTypes, td._typeDefinitionAst, className);
                             foreach (var b1 in td._typeDefinitionAst.BaseTypes)
@@ -2409,8 +2408,7 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
             methodsLinePosition = new Dictionary<string, int>();
             foreach (var member in typeDefinitionAst.Members)
             {
-                var functionMemberAst = member as FunctionMemberAst;
-                if (functionMemberAst != null)
+                if (member is FunctionMemberAst functionMemberAst)
                 {
                     if (functionMemberAst.Name.Equals(getMethodName, StringComparison.OrdinalIgnoreCase))
                     {
@@ -2490,9 +2488,7 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
         {
             foreach (var member in typeDefinitionAst.Members)
             {
-                var property = member as PropertyMemberAst;
-
-                if (property == null || property.IsStatic ||
+                if (member is not PropertyMemberAst property || property.IsStatic ||
                     property.Attributes.All(a => a.TypeName.GetReflectionAttributeType() != typeof(DscPropertyAttribute)))
                 {
                     continue;
@@ -2595,13 +2591,15 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
 
             resourceDefinitions = ast.FindAll(n =>
             {
-                var typeAst = n as TypeDefinitionAst;
-                if (typeAst != null)
+                if (n is TypeDefinitionAst typeAst)
                 {
                     for (int i = 0; i < typeAst.Attributes.Count; i++)
                     {
                         var a = typeAst.Attributes[i];
-                        if (a.TypeName.GetReflectionAttributeType() == typeof(DscResourceAttribute)) return true;
+                        if (a.TypeName.GetReflectionAttributeType() == typeof(DscResourceAttribute))
+                        {
+                            return true;
+                        }
                     }
                 }
 
@@ -2655,7 +2653,10 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
                     }
                 }
 
-                if (skip) continue;
+                if (skip)
+                {
+                    continue;
+                }
 
                 // Parse the Resource Attribute to see if RunAs behavior is specified for the resource.
                 DSCResourceRunAsCredential runAsBehavior = DSCResourceRunAsCredential.Default;
@@ -2665,13 +2666,9 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
                     {
                         foreach (var na in attr.NamedArguments)
                         {
-                            if (na.ArgumentName.Equals("RunAsCredential", StringComparison.OrdinalIgnoreCase))
+                            if (na.ArgumentName.Equals("RunAsCredential", StringComparison.OrdinalIgnoreCase) && attr.GetAttribute() is DscResourceAttribute dscResourceAttribute)
                             {
-                                var dscResourceAttribute = attr.GetAttribute() as DscResourceAttribute;
-                                if (dscResourceAttribute != null)
-                                {
-                                    runAsBehavior = dscResourceAttribute.RunAsCredential;
-                                }
+                                runAsBehavior = dscResourceAttribute.RunAsCredential;
                             }
                         }
                     }
@@ -2905,8 +2902,7 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
             bool needComma = false;
             foreach (var attr in customAttributes)
             {
-                var dscProperty = attr as DscPropertyAttribute;
-                if (dscProperty != null)
+                if (attr is DscPropertyAttribute dscProperty)
                 {
                     if (dscProperty.Key)
                     {
@@ -2929,8 +2925,7 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
                     continue;
                 }
 
-                var validateSet = attr as ValidateSetAttribute;
-                if (validateSet != null)
+                if (attr is ValidateSetAttribute validateSet)
                 {
                     bool valueMapComma = false;
                     StringBuilder sbValues = new(", Values{");
@@ -3130,7 +3125,10 @@ namespace Microsoft.PowerShell.DesiredStateConfiguration.Internal
                     }
                 }
 
-                if (skip) continue;
+                if (skip)
+                {
+                    continue;
+                }
 
                 var mof = GenerateMofForType(r);
 

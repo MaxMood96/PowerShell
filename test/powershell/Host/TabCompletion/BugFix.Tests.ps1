@@ -28,10 +28,9 @@ Describe "Tab completion bug fix" -Tags "CI" {
     It "Issue#1345 - 'Import-Module -n<tab>' should work" {
         $cmd = "Import-Module -n"
         $result = TabExpansion2 -inputScript $cmd -cursorColumn $cmd.Length
-        $result.CompletionMatches | Should -HaveCount 3
+        $result.CompletionMatches | Should -HaveCount 2
         $result.CompletionMatches[0].CompletionText | Should -BeExactly "-Name"
         $result.CompletionMatches[1].CompletionText | Should -BeExactly "-NoClobber"
-        $result.CompletionMatches[2].CompletionText | Should -BeExactly "-NoOverwrite"
     }
 
     It "Issue#11227 - [CompletionCompleters]::CompleteVariable and [CompletionCompleters]::CompleteType should work" {
@@ -42,6 +41,28 @@ Describe "Tab completion bug fix" -Tags "CI" {
         $result = [System.Management.Automation.CompletionCompleters]::CompleteVariable("errorAction")
         $result.Count | Should -BeExactly 1
         $result[0].CompletionText | Should -BeExactly '$ErrorActionPreference'
+    }
+
+    It "Issue#24756 - Wildcard completions should not return early due to missing results in one container" -Skip:(!$IsWindows) {
+        try
+        {
+            $keys = New-Item -Path @(
+                'HKCU:\AB1'
+                'HKCU:\AB2'
+                'HKCU:\AB2\Test'
+            )
+
+            $res = TabExpansion2 -inputScript 'Get-ChildItem -Path HKCU:\AB?\'
+            $res.CompletionMatches.Count | Should -Be 1
+            $res.CompletionMatches[0].CompletionText | Should -BeExactly "HKCU:\AB2\Test"
+        }
+        finally
+        {
+            if ($keys)
+            {
+                Remove-Item -Path HKCU:\AB? -Recurse -ErrorAction SilentlyContinue
+            }
+        }
     }
 
     Context "Issue#3416 - 'Select-Object'" {
@@ -87,5 +108,22 @@ Describe "Tab completion bug fix" -Tags "CI" {
         $result.ReplacementLength | Should -Be 0
         $result.CompletionMatches[0].CompletionText | Should -BeExactly 'Ascending'
         $result.CompletionMatches[1].CompletionText | Should -BeExactly 'Descending'
+    }
+
+    It "Issue#19912 - Tab completion should not crash" {
+        $ISS = [initialsessionstate]::CreateDefault()
+        $Runspace = [runspacefactory]::CreateRunspace($ISS)
+        $Runspace.Open()
+        $OldRunspace = [runspace]::DefaultRunspace
+        try
+        {
+            [runspace]::DefaultRunspace = $Runspace
+            {[System.Management.Automation.CommandCompletion]::CompleteInput('Get-', 3, $null)} | Should -Not -Throw
+        }
+        finally
+        {
+            [runspace]::DefaultRunspace = $OldRunspace
+            $Runspace.Dispose()
+        }
     }
 }

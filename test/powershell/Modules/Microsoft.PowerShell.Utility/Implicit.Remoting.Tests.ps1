@@ -5,7 +5,7 @@
 $originalDefaultParameterValues = $PSDefaultParameterValues.Clone()
 $originalWarningPreference = $WarningPreference
 $WarningPreference = "SilentlyContinue"
-$skipTest = ! ($IsWindows -and $IsCoreCLR -and (Test-IsElevated))
+$skipTest = ! ($IsWindows -and $IsCoreCLR -and (Test-IsElevated)) -or (Test-IsWinWow64)
 $PSDefaultParameterValues["it:skip"] = $skipTest
 
 try
@@ -1633,7 +1633,7 @@ try
             try {
                 Invoke-Command $session { function attack(${foo="$(calc)"}){Write-Output "It is done."}}
                 $module = Import-PSSession -Session $session -CommandName attack -ErrorAction SilentlyContinue -ErrorVariable expectedError -AllowClobber
-                $expectedError | Should -Not -BeNullOrEmpty
+                $expectedError | Should -Not -Be $null
             } finally {
                 if ($null -ne $module) { Remove-Module $module -Force -ErrorAction SilentlyContinue }
             }

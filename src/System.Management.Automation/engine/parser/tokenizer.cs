@@ -1976,9 +1976,6 @@ namespace System.Management.Automation.Language
                 RequiredPSEditions = requiredEditions != null
                                                     ? new ReadOnlyCollection<string>(requiredEditions)
                                                     : ScriptRequirements.EmptyEditionCollection,
-                RequiresPSSnapIns = requiredSnapins != null
-                                                   ? new ReadOnlyCollection<PSSnapInSpecification>(requiredSnapins)
-                                                   : ScriptRequirements.EmptySnapinCollection,
                 RequiredAssemblies = requiredAssemblies != null
                                                     ? new ReadOnlyCollection<string>(requiredAssemblies)
                                                     : ScriptRequirements.EmptyAssemblyCollection,
@@ -3910,7 +3907,8 @@ namespace System.Management.Automation.Language
                     return ScanGenericToken(GetStringBuilder());
                 }
 
-                ReportError(_currentIndex,
+                ReportError(
+                    NewScriptExtent(_tokenStart, _currentIndex),
                     nameof(ParserStrings.BadNumericConstant),
                     ParserStrings.BadNumericConstant,
                     _script.Substring(_tokenStart, _currentIndex - _tokenStart));

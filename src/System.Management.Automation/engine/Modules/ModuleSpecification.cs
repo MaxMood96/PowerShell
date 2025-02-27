@@ -44,12 +44,10 @@ namespace Microsoft.PowerShell.Commands
         /// <param name="moduleName">The module name.</param>
         public ModuleSpecification(string moduleName)
         {
-            if (string.IsNullOrEmpty(moduleName))
-            {
-                throw new ArgumentNullException(nameof(moduleName));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(moduleName);
 
             this.Name = moduleName;
+
             // Alias name of miniumVersion
             this.Version = null;
             this.RequiredVersion = null;
@@ -165,6 +163,49 @@ namespace Microsoft.PowerShell.Commands
             }
 
             return null;
+        }
+
+        internal string GetRequiredModuleNotFoundVersionMessage()
+        {
+            if (RequiredVersion is not null)
+            {
+                return StringUtil.Format(
+                    Modules.RequiredModuleNotFoundRequiredVersion,
+                    Name,
+                    RequiredVersion);
+            }
+
+            bool hasVersion = Version is not null;
+            bool hasMaximumVersion = MaximumVersion is not null;
+
+            if (hasVersion && hasMaximumVersion)
+            {
+                return StringUtil.Format(
+                    Modules.RequiredModuleNotFoundModuleAndMaximumVersion,
+                    Name,
+                    Version,
+                    MaximumVersion);
+            }
+
+            if (hasVersion)
+            {
+                return StringUtil.Format(
+                    Modules.RequiredModuleNotFoundModuleVersion,
+                    Name,
+                    Version);
+            }
+
+            if (hasMaximumVersion)
+            {
+                return StringUtil.Format(
+                    Modules.RequiredModuleNotFoundMaximumVersion,
+                    Name,
+                    MaximumVersion);
+            }
+
+            return StringUtil.Format(
+                Modules.RequiredModuleNotFoundWithoutVersion,
+                Name);
         }
 
         internal ModuleSpecification(PSModuleInfo moduleInfo)
